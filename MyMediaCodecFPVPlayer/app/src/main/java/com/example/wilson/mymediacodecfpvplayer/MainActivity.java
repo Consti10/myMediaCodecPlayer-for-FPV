@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,8 +35,18 @@ public class MainActivity extends Activity {
                 startActivity(mSurfaceViewI);
             }
         });
+        Button mSurfaceTextureB=new Button(this);
+        mSurfaceTextureB.setText("Start TextureView Player");
+        mTextureViewI=new Intent();
+        mTextureViewI.setClass(this, TextureViewActivity.class);
+        mSurfaceTextureB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(mTextureViewI);
+            }
+        });
         Button mOpenGLB=new Button(this);
-        mOpenGLB.setText("Start OpenGL Player");
+        mOpenGLB.setText("Start OpenGL Player (Side by Side)");
         mOpenGLI=new Intent();
         mOpenGLI.setClass(this, OpenGLActivity.class);
         mOpenGLB.setOnClickListener(new View.OnClickListener() {
@@ -44,23 +55,13 @@ public class MainActivity extends Activity {
                 startActivity(mOpenGLI);
             }
         });
-        Button mSurfaceTextureB=new Button(this);
-        mSurfaceTextureB.setText("Start TextureView Player");
-        mTextureViewI=new Intent();
-        mTextureViewI.setClass(this,TextureViewActivity.class);
-        mSurfaceTextureB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(mTextureViewI);
-            }
-        });
 
         LinearLayout mLinearLayout=new LinearLayout(this);
         mLinearLayout.setOrientation(LinearLayout.VERTICAL);
         mLinearLayout.addView(mTextView);
         mLinearLayout.addView(mSurfaceViewB);
-        mLinearLayout.addView(mOpenGLB);
         mLinearLayout.addView(mSurfaceTextureB);
+        mLinearLayout.addView(mOpenGLB);
 
         setContentView(mLinearLayout);
     }

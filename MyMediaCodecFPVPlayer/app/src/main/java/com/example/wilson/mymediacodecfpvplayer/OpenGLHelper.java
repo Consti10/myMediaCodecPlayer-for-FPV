@@ -2,6 +2,7 @@ package com.example.wilson.mymediacodecfpvplayer;
 
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 public class OpenGLHelper {
     public static int createProgram(String vertexSource, String fragmentSource) {
@@ -77,13 +78,9 @@ public class OpenGLHelper {
                         "}\n";
         return fragmentShader;
     }
-    public static float[] getTriangleVerticesData() {
+    /*public static float[] getTriangleVerticesData() {
         float[] TriangleVerticesData = {
                 // X, Y, Z, U, V
-                /*-1.0f, -1.0f, 0, 0.f, 0.f,
-                 1.0f, -1.0f, 0, 1.f, 0.f,
-                -1.0f,  1.0f, 0, 0.f, 1.f,
-                 1.0f,  1.0f, 0, 1.f, 1.f,*/
                 -1.0f, -0.75f, 0, 0.f, 0.f,
                 0.0f, -0.75f, 0, 1.f, 0.f,
                 -1.0f,  0.75f, 0, 0.f, 1.f,
@@ -93,6 +90,25 @@ public class OpenGLHelper {
                 1.0f, -0.75f, 0, 1.f, 0.f,
                 0.0f,  0.75f, 0, 0.f, 1.f,
                 1.0f,  0.75f, 0, 1.f, 1.f
+        };
+        return TriangleVerticesData;
+    }*/
+    public static float[] getTriangleVerticesDataByFormat(float format){
+        //F.e format=4:3
+        // (1/desired format) multiplied by the display faktor (in this case: a 16:9 Display)
+        float y=(1.0f/format)*(8.0f/9.0f);
+        if(y<=0 || y>1){y=0.75f;}
+        float[] TriangleVerticesData = {
+                // X, Y, Z, U, V
+                -1.0f, -y, 0, 0.f, 0.f,
+                 0.0f, -y, 0, 1.f, 0.f,
+                -1.0f,  y, 0, 0.f, 1.f,
+                 0.0f,  y, 0, 1.f, 1.f,
+
+                 0.0f, -y, 0, 0.f, 0.f,
+                 1.0f, -y, 0, 1.f, 0.f,
+                 0.0f,  y, 0, 0.f, 1.f,
+                 1.0f,  y, 0, 1.f, 1.f
         };
         return TriangleVerticesData;
     }

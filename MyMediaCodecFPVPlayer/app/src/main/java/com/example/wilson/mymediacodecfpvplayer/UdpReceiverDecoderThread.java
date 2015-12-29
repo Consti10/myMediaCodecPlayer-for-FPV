@@ -70,10 +70,6 @@ public class UdpReceiverDecoderThread extends Thread {
             System.out.println("error config decoder");
         }
         decoder.start();
-
-        //
-        //try {Thread.sleep(200000,0);} catch (InterruptedException e) {e.printStackTrace();}
-        //
     }
 
     public void run() {
@@ -145,11 +141,9 @@ public class UdpReceiverDecoderThread extends Thread {
                         else
                             nalu_search_state = 0;
                         break;
-
                     case 3:
                         if (p[i] == 1) {
                             //nalupacket found
-
                             nalu_data[0] = 0;
                             nalu_data[1] = 0;
                             nalu_data[2] = 0;
@@ -158,9 +152,7 @@ public class UdpReceiverDecoderThread extends Thread {
                             nalu_data_position = 4;
                         }
                         nalu_search_state = 0;
-
                         break;
-
                     default:
                         break;
                 }
@@ -216,9 +208,10 @@ public class UdpReceiverDecoderThread extends Thread {
         }
         if (s != null) {
             s.close();
-            decoder.stop();
         }
-        System.out.println("has been stopped");
+        decoder.flush();
+        decoder.stop();
+        decoder.release();
     }
 
     private void receiveFromFile() {
@@ -232,21 +225,23 @@ public class UdpReceiverDecoderThread extends Thread {
             return;
         }
         for (; ; ) {
+            if(Thread.interrupted()){running=false;break;}
             int sampleSize = 0;
             try {
                 sampleSize = in.read(buffer2, 0, 18800 * 8 * 8 * 8);
             } catch (IOException e) {
             }
             if (sampleSize < 0) {
-                Log.d("UDP", "End of stream");
+                Log.d("File", "End of stream");
                 System.out.println(s);
                 running = false;
-                System.out.println("End of Stream");
                 break;
             } else {
                 parseDatagram(buffer2, sampleSize);
             }
         }
+        decoder.flush();
         decoder.stop();
+        decoder.release();
     }
 }

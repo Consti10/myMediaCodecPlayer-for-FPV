@@ -17,6 +17,8 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
+    private static final float VIDEO_FORMAT_FOR_OPENGL=4.0f/3.0f;
+
     private static final int FLOAT_SIZE_BYTES = 4;
     private static final int TRIANGLE_VERTICES_DATA_STRIDE_BYTES = 5 * FLOAT_SIZE_BYTES;
     private static final int TRIANGLE_VERTICES_DATA_POS_OFFSET = 0;
@@ -47,9 +49,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public MyGLRenderer(Context context){
         mcontext=context;
         mTriangleVertices = ByteBuffer.allocateDirect(
-                OpenGLHelper.getTriangleVerticesData().length * FLOAT_SIZE_BYTES)
+                OpenGLHelper.getTriangleVerticesDataByFormat(VIDEO_FORMAT_FOR_OPENGL).length * FLOAT_SIZE_BYTES)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mTriangleVertices.put(OpenGLHelper.getTriangleVerticesData()).position(0);
+        mTriangleVertices.put(OpenGLHelper.getTriangleVerticesDataByFormat(VIDEO_FORMAT_FOR_OPENGL)).position(0);
 
         Matrix.setIdentityM(mSTMatrix, 0);
     }
@@ -57,7 +59,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config)
     {
-        GLES20.glClearColor(0.0f, 0.0f, 0.1f, 0.0f);
+        System.out.println("onSurfaceCreated");
+        GLES20.glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
         //
         mProgram = OpenGLHelper.createProgram(OpenGLHelper.getVertexShader(), OpenGLHelper.getFragmentShader());
         if (mProgram == 0) {
@@ -118,21 +121,20 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 glUnused) {
-        /*updateSurface=true;
-        long timeBUpdate=System.currentTimeMillis();
+        //updateSurface=true;
+        /*long timeBUpdate=System.currentTimeMillis();
         synchronized(this) {
             if (updateSurface) {
                 mSurfaceTexture.updateTexImage();
-                //mSurfaceTexture.getTransformMatrix(mSTMatrix);
                 updateSurface = false;
             }
         }*/
         long timeBUpdate=System.currentTimeMillis();
         mSurfaceTexture.updateTexImage();
         //GLES20.glFinish();
-        if((System.currentTimeMillis()-timeBUpdate)>=12){
-            //Log.w("MyGLRenderer","Time for updating:"+(System.currentTimeMillis()-timeBUpdate));
-        }
+        /*if((System.currentTimeMillis()-timeBUpdate)>=12){
+            Log.w("MyGLRenderer","Time for updating:"+(System.currentTimeMillis()-timeBUpdate));
+        }*/
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glUseProgram(mProgram);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -156,13 +158,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         zaehlerFramerate++;
         if((System.currentTimeMillis()-timeb)>1000){
             //System.out.println("fps:"+(zaehlerFramerate/1));
-            //Toast.makeText(mcontext,"fps:"+(zaehlerFramerate/1), Toast.LENGTH_SHORT).show();
             fps=(zaehlerFramerate/1);
             timeb=System.currentTimeMillis();
             zaehlerFramerate=0;
             Log.w("MyGLRenderer", "fps:" + fps);
         }
 
+    }
+    public void onSurfaceDestroyed(){
+        mDecoder.interrupt();
     }
 
 
