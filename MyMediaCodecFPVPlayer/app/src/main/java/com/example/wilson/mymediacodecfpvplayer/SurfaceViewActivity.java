@@ -1,6 +1,9 @@
 package com.example.wilson.mymediacodecfpvplayer;
 
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +18,11 @@ public class SurfaceViewActivity extends AppCompatActivity implements SurfaceHol
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         SurfaceView sv = new SurfaceView(this);
         sv.getHolder().addCallback(this);
         setContentView(sv);
+
     }
 
     protected void onDestroy() {
@@ -38,6 +43,7 @@ public class SurfaceViewActivity extends AppCompatActivity implements SurfaceHol
     public void surfaceDestroyed(SurfaceHolder holder) {
         if(mDecoder != null) {
             mDecoder.interrupt();
+            mDecoder=null;
         }
     }
 

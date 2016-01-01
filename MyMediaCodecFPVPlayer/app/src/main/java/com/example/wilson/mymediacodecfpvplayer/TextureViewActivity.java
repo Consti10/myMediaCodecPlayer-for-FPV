@@ -1,5 +1,6 @@
 package com.example.wilson.mymediacodecfpvplayer;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,7 @@ public class TextureViewActivity extends AppCompatActivity implements TextureVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         mTextureView = new TextureView(this);
         mTextureView.setSurfaceTextureListener(this);
         setContentView(mTextureView);
@@ -36,6 +38,7 @@ public class TextureViewActivity extends AppCompatActivity implements TextureVie
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         mDecoder.interrupt();
+        mDecoder=null;
         return false;
     }
     @Override

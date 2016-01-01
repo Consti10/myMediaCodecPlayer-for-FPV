@@ -2,12 +2,15 @@ package com.example.wilson.mymediacodecfpvplayer;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Surface;
+import android.widget.Toast;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -17,7 +20,8 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
-    private static final float VIDEO_FORMAT_FOR_OPENGL=4.0f/3.0f;
+    //private static final float VIDEO_FORMAT_FOR_OPENGL=16.0f/9.0f;
+    SharedPreferences settings;
 
     private static final int FLOAT_SIZE_BYTES = 4;
     private static final int TRIANGLE_VERTICES_DATA_STRIDE_BYTES = 5 * FLOAT_SIZE_BYTES;
@@ -48,10 +52,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     public MyGLRenderer(Context context){
         mcontext=context;
+
+        settings= PreferenceManager.getDefaultSharedPreferences(mcontext);
+        float videoFormat=1.3333f;
+        try{
+            videoFormat=Float.parseFloat(settings.getString("videoFormat","1.3333"));
+        }catch(Exception e){e.printStackTrace();}
         mTriangleVertices = ByteBuffer.allocateDirect(
-                OpenGLHelper.getTriangleVerticesDataByFormat(VIDEO_FORMAT_FOR_OPENGL).length * FLOAT_SIZE_BYTES)
+                OpenGLHelper.getTriangleVerticesDataByFormat(videoFormat).length * FLOAT_SIZE_BYTES)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mTriangleVertices.put(OpenGLHelper.getTriangleVerticesDataByFormat(VIDEO_FORMAT_FOR_OPENGL)).position(0);
+        mTriangleVertices.put(OpenGLHelper.getTriangleVerticesDataByFormat(videoFormat)).position(0);
 
         Matrix.setIdentityM(mSTMatrix, 0);
     }
@@ -97,8 +107,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
                 GLES20.GL_LINEAR);
         //mSurfaceTexture = new SurfaceTexture(mTextureID);
+        //Don't enable double buffering
         mSurfaceTexture = new SurfaceTexture(mTextureID,false);
         mSurfaceTexture.setDefaultBufferSize(10,10);
+        //It seems like we don't need any synchronization for updateTexImage; it immediately returns,when no data has changed;
+        //by the way: onFrameAvailable seems to have issues on my Mali 450mp gpu,so it's better for me to avoid.
         /*mSurfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
             @Override
             public void onFrameAvailable(SurfaceTexture surfaceTexture) {
@@ -165,9 +178,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
 
     }
-    public void onSurfaceDestroyed(){
+    public void onSurfaceDestroyed() {
         mDecoder.interrupt();
+        mDecoder=null;
     }
-
 
 }

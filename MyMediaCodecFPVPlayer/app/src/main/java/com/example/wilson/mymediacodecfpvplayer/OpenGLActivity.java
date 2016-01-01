@@ -23,7 +23,6 @@ public class OpenGLActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature((Window.FEATURE_NO_TITLE));
         super.onCreate(savedInstanceState);
-        mGLView = new MyGLSurfaceView(this);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         ActionBar actionBar = getSupportActionBar();
@@ -40,6 +39,7 @@ public class OpenGLActivity extends AppCompatActivity {
                 ;
         decorView.setSystemUiVisibility(uiOptions);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mGLView = new MyGLSurfaceView(this);
         setContentView(mGLView);
     }
 

@@ -9,4 +9,5 @@
 
     <string name="title_activity_open_gl">OpenGLActivity</string>
     <string name="title_activity_my_texture_view">MyTextureViewActivity</string>
+    <string name="title_activity_settings">SettingsActivit</string>
 </resources>

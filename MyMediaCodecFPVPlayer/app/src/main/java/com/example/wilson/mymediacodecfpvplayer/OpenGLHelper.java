@@ -100,15 +100,15 @@ public class OpenGLHelper {
         if(y<=0 || y>1){y=0.75f;}
         float[] TriangleVerticesData = {
                 // X, Y, Z, U, V
-                -1.0f, -y, 0, 0.f, 0.f,
-                 0.0f, -y, 0, 1.f, 0.f,
-                -1.0f,  y, 0, 0.f, 1.f,
-                 0.0f,  y, 0, 1.f, 1.f,
+                -1.0f, y, 0, 0.f, 0.f,
+                 0.0f, y, 0, 1.f, 0.f,
+                -1.0f,-y, 0, 0.f, 1.f,
+                 0.0f,-y, 0, 1.f, 1.f,
 
-                 0.0f, -y, 0, 0.f, 0.f,
-                 1.0f, -y, 0, 1.f, 0.f,
-                 0.0f,  y, 0, 0.f, 1.f,
-                 1.0f,  y, 0, 1.f, 1.f
+                 0.0f, y, 0, 0.f, 0.f,
+                 1.0f, y, 0, 1.f, 0.f,
+                 0.0f,-y, 0, 0.f, 1.f,
+                 1.0f,-y, 0, 1.f, 1.f
         };
         return TriangleVerticesData;
     }

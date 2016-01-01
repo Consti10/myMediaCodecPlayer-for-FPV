@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="videoFormat"
+        android:inputType="numberDecimal"
+        android:title="Video Format"
+        android:defaultValue="1.3333" />
+
+    <ListPreference
+        android:title="List Preference"
+        android:key="dataSource"
+        android:summary="Select your Data Source"
+        android:entries="@array/listentries"
+        android:entryValues="@array/listvalues" />
+
+    <EditTextPreference
+        android:key="fileNameVideoSource"
+        android:title="File name1"
+        android:summary="select your raw h.264 file name (located in your internal Storage) for receiving data from file"
+        android:defaultValue="rpi960mal810.h264" />
+
+    <SwitchPreference
+        android:key="groundRecording"
+        android:title="Ground Recording"
+        android:summary="Select Ground recording on/off"
+        android:defaultValue="false" />
+
+    <EditTextPreference
+        android:key="fileName"
+        android:title="File name2"
+        android:summary="select your raw h.264 file name (located in your internal Storage) for Ground Recording"
+        android:defaultValue="mGroundRecording.h264" />
+
+
+
+</PreferenceScreen>
