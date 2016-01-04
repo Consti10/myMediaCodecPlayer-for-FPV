@@ -47,6 +47,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     int zaehlerFramerate=0;
     long timeb=0;
     long fps=0;
+    long SurfaceTextureTimeB=0;
 
     private UdpReceiverDecoderThread mDecoder;
 
@@ -109,7 +110,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //mSurfaceTexture = new SurfaceTexture(mTextureID);
         //Don't enable double buffering
         mSurfaceTexture = new SurfaceTexture(mTextureID,false);
-        mSurfaceTexture.setDefaultBufferSize(10,10);
+        //MediaCodec overrides this size anyway
+        //mSurfaceTexture.setDefaultBufferSize(960, 810);
         //It seems like we don't need any synchronization for updateTexImage; it immediately returns,when no data has changed;
         //by the way: onFrameAvailable seems to have issues on my Mali 450mp gpu,so it's better for me to avoid.
         /*mSurfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
@@ -142,9 +144,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 updateSurface = false;
             }
         }*/
-        long timeBUpdate=System.currentTimeMillis();
+        //long timeBUpdate=System.currentTimeMillis();
+        //Danger: getTimestamp can't be used to compare with System.nanoTime or System.currentTimeMillis
+        //because it's zero point depends on the sources providing the image;
         mSurfaceTexture.updateTexImage();
+        GLES20.glFinish();
+        /*mSurfaceTexture.updateTexImage();
+        GLES20.glFinish();
+        mSurfaceTexture.updateTexImage();
+        GLES20.glFinish();
+        mSurfaceTexture.updateTexImage();
+        GLES20.glFinish();
+        mSurfaceTexture.updateTexImage();
+        GLES20.glFinish();*/
+        //Log.w("renderer", "since last time: " + ((mSurfaceTexture.getTimestamp() - SurfaceTextureTimeB) / 1000));
+        //SurfaceTextureTimeB=mSurfaceTexture.getTimestamp();
+        //Log.w("MyGLRenderer","Time for updating:"+(System.currentTimeMillis()-timeBUpdate));
         //GLES20.glFinish();
+        //GLES20.glFlush();
         /*if((System.currentTimeMillis()-timeBUpdate)>=12){
             Log.w("MyGLRenderer","Time for updating:"+(System.currentTimeMillis()-timeBUpdate));
         }*/
@@ -169,14 +186,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         //
         zaehlerFramerate++;
-        if((System.currentTimeMillis()-timeb)>1000){
+        if((System.currentTimeMillis()-timeb)>1000) {
             //System.out.println("fps:"+(zaehlerFramerate/1));
-            fps=(zaehlerFramerate/1);
-            timeb=System.currentTimeMillis();
-            zaehlerFramerate=0;
+            fps = (zaehlerFramerate / 1);
+            timeb = System.currentTimeMillis();
+            zaehlerFramerate = 0;
             Log.w("MyGLRenderer", "fps:" + fps);
         }
-
     }
     public void onSurfaceDestroyed() {
         mDecoder.interrupt();
