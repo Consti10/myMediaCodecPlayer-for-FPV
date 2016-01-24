@@ -8,6 +8,7 @@ And https://befinitiv.wordpress.com/2015/04/18/porting-wifibroadcast-to-android/
 Other use-cases are: Screencast/Screen Mirroring and GameStreaming 
 
 Example (command-line for linux) to Mirror your pc screen to your Android Device:
+
 1)(Best) avconv -f x11grab -r 120 -s 800x600 --vcodec libx264 -preset ultrafast -tune zerolatency -threads 0 -f h264 -bf 0 -refs 120 -b 2000000 -maxrate 3000 -bufsize 100 -| socat -b 1024 - UDP4-SENDTO:10.24.193.196:5000
 2) gst-launch -e ximagesrc ! queue ! videoscale ! video/x-raw-rgb, framerate=25/1, width=640, height=360 ! queue ! ffmpegcolorspace ! x264enc tune=zerolatency profile=baseline byte-stream=1 ! fdsink -| socat -b 1024 - UDP4-SENDTO:10.133.103.202:5000
 3)(using Istanbuls istximagesink) gst-launch -e istximagesrc ! ffmpegcolorspace ! x264enc tune=zerolatency profile=baseline byte-stream=1 ! fdsink -| socat -b 1024 - UDP4-SENDTO:10.133.103.202:5000
