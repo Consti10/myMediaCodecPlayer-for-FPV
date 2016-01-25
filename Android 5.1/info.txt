@@ -1,0 +1,1 @@
+you can find the latest apk in app/build/outputs/apk
