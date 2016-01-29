@@ -1,1 +1,0 @@
-you can find the latest Android apk in Android5.1/MyMediacodecFPVPlayer/app/build/outputs/apk
