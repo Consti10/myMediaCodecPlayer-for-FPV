@@ -38,7 +38,6 @@ public class SurfaceViewActivity extends AppCompatActivity implements SurfaceHol
         if(mDecoder == null) {
             mDecoder = new UdpReceiverDecoderThread(holder.getSurface(), 5000,this);
             mDecoder.start();
-            Toast.makeText(this, "has been started", Toast.LENGTH_SHORT).show();
         }
     }
     @Override

@@ -9,4 +9,15 @@
         <item>FILE</item>
     </string-array>
 
+    <string-array name="listentries2" >
+        <item>Use Default HW decoder</item>
+        <item>Use Google SW decoder(pretty slow,but tested)</item>
+    </string-array>
+    <string-array name="listvalues2">
+        <item>HW</item>
+        <item>SW</item>
+    </string-array>
+
+
+
 </resources>

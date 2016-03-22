@@ -8,6 +8,12 @@
         android:defaultValue="1.3333"
         android:summary="only for openGL"/>
 
+    <SwitchPreference
+        android:key="osd"
+        android:title="OSD"
+        android:summary="Select OSD on/off"
+        android:defaultValue="true" />
+
     <ListPreference
         android:title="List Preference"
         android:key="dataSource"
@@ -42,10 +48,37 @@
          The overall App latency may be much more higher,because you have to add the 'input lag' of your phone-about 32-48ms on android \n
          Every 'time' values are in ms. \n" />
 
+
+    <SwitchPreference
+        android:key="decoderMultiThread"
+        android:title="Decoder Multi Thread"
+        android:summary="Reduces latency on most Devices, but some don't like it; default:true"
+        android:defaultValue="true" />
+
     <SwitchPreference
         android:key="unlimitedOGLFps"
         android:title="Unlimited Opengl FPS"
-        android:summary="Experimental ! Using EGLExt.eglPresentationTimeANDROID();"
+        android:summary="Experimental ! Using EGLExt.eglPresentationTimeANDROID();default: false"
         android:defaultValue="false" />
+
+    <ListPreference
+        android:title="List Preference"
+        android:key="decoder"
+        android:summary="Select your Decoder"
+        android:entries="@array/listentries2"
+        android:entryValues="@array/listvalues2" />
+
+    <SwitchPreference
+        android:key="userDebug"
+        android:title="User Debug"
+        android:summary="shows toasts with debug info. default: false"
+        android:defaultValue="false" />
+
+    <EditTextPreference
+        android:key="debugFile"
+        android:title="Debug file"
+        android:summary="shows any exceptions if thrown and userDebug enabled"
+        android:defaultValue="" />
+
 
 </PreferenceScreen>

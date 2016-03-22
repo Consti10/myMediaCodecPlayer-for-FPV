@@ -12,6 +12,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -47,6 +49,7 @@ public class OpenGLActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mGLView = new MyGLSurfaceView(this);
+        //mGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         setContentView(mGLView);
     }
 
@@ -59,7 +62,7 @@ public class OpenGLActivity extends AppCompatActivity {
             super(context);
             mContext = context;
             setEGLContextClientVersion(2);
-            mRenderer = new MyGLRenderer(mContext);
+            mRenderer = new MyGLRenderer(mContext,mGLView);
             setRenderer(mRenderer);
         }
 
@@ -76,6 +79,17 @@ public class OpenGLActivity extends AppCompatActivity {
             mRenderer.onSurfaceDestroyed();
         }
 
+
+        @Override
+        public boolean onTouchEvent(MotionEvent e) {
+            Log.d("", "Hello");
+            if(e.getActionMasked()==MotionEvent.ACTION_UP){
+                if(mRenderer != null){
+                    mRenderer.onTap();
+                }
+            }
+            return true;
+        }
 
 
 
