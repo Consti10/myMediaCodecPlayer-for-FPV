@@ -30,7 +30,7 @@ public class TextureViewActivity extends AppCompatActivity implements TextureVie
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         Surface mDecoderSurface=new Surface(surface);
         mDecoder=new UdpReceiverDecoderThread(mDecoderSurface,5000,this);
-        mDecoder.start();
+        mDecoder.startDecoding();
 
     }
 
@@ -40,8 +40,7 @@ public class TextureViewActivity extends AppCompatActivity implements TextureVie
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         if(mDecoder != null){
-            mDecoder.interrupt();
-            mDecoder=null;
+            mDecoder.stopDecoding();
         }
         return false;
     }

@@ -1,11 +1,9 @@
 package com.example.wilson.mymediacodecfpvplayer;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
 import android.media.MediaCodec.CodecException;
 import android.media.MediaFormat;
 import android.os.Environment;
@@ -14,12 +12,6 @@ import android.util.Log;
 import android.view.Surface;
 import android.widget.Toast;
 
-import org.jcodec.codecs.h264.H264Const;
-import org.jcodec.codecs.h264.H264Utils;
-import org.jcodec.codecs.h264.io.model.PictureParameterSet;
-import org.jcodec.codecs.h264.io.model.SeqParameterSet;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -27,14 +19,13 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.text.Normalizer;
 
 /*
 receives raw h.264 byte stream on udp port 5000,parses the data into NALU units,and passes them into a MediaCodec Instance.
 Original: https://bitbucket.org/befi/h264viewer
 Edited by Constantin Geier
  */
-public class UdpReceiverDecoderThread extends Thread {
+public class UdpReceiverDecoderThread {
     public volatile boolean next_frame=false;
     SharedPreferences settings;
     private Surface surface;
@@ -43,6 +34,7 @@ public class UdpReceiverDecoderThread extends Thread {
     private boolean groundRecord=false;
     private boolean DecoderMultiThread=true;
     private boolean userDebug=false;
+    DatagramSocket s = null;
     int port;
     int nalu_search_state = 0;
     byte[] nalu_data;
@@ -51,13 +43,12 @@ public class UdpReceiverDecoderThread extends Thread {
     Context mContext;
     int readBufferSize=1024*1024*60;
     byte buffer2[] = new byte[readBufferSize];
-
     private volatile boolean running = true;
-
     private int zaehlerFramerate=0;
     private long timeB = 0;
     private long timeB2=0;
     private long fpsSum=0,fpsCount=0,averageDecoderfps=0;
+    private int current_fps=0;
     private long presentationTimeMs=0;
     private long averageHWDecoderLatency=0;
     private long HWDecoderlatencySum=0;
@@ -72,7 +63,6 @@ public class UdpReceiverDecoderThread extends Thread {
     private ByteBuffer[] inputBuffers;
     private ByteBuffer[] outputBuffers;
     private MediaCodec.BufferInfo info;
-
     private MediaCodec decoder;
     private MediaFormat format;
 
@@ -84,8 +74,9 @@ public class UdpReceiverDecoderThread extends Thread {
         nalu_data = new byte[NALU_MAXLEN];
         nalu_data_position = 0;
         settings= PreferenceManager.getDefaultSharedPreferences(mContext);
-        DecoderMultiThread=settings.getBoolean("decoderMultiThread",true);
+        DecoderMultiThread=settings.getBoolean("decoderMultiThread", true);
         userDebug=settings.getBoolean("userDebug", false);
+        groundRecord=settings.getBoolean("groundRecording", false);
         if(userDebug){
             SharedPreferences.Editor editor=settings.edit();
             if(settings.getString("debugFile","").length()>=5000){
@@ -113,11 +104,9 @@ public class UdpReceiverDecoderThread extends Thread {
         }
         System.out.println("Codec Info: " + decoder.getCodecInfo().getName());
         if(userDebug){ makeToast("Selected decoder: " + decoder.getCodecInfo().getName());}
-
         format = MediaFormat.createVideoFormat("video/avc", 1920, 1080);
         format.setByteBuffer("csd-0",csd0);
         format.setByteBuffer("csd-1", csd1);
-
         try {
             //This configuration will be overwritten anyway when we put an sps into the buffer
             //But: My decoder agrees with this,but some may not; to be improved
@@ -133,43 +122,49 @@ public class UdpReceiverDecoderThread extends Thread {
             handleDecoderException(e,"configure decoder");
         }
         decoder.start();
-        if(DecoderMultiThread){
-            new Thread(new Runnable() {
-                public void run() {
-                    setPriority(Thread.MAX_PRIORITY);
-                    System.out.println("Thread Priority: " + getPriority());
-                    while (running) {
-                        checkOutput();
-                    }
-                }
-            }).start();
-        }
         decoderConfigured=true;
+        if(DecoderMultiThread){
+            Thread thread2=new Thread(){
+                @Override
+                public void run() {while(running){checkOutput();}}
+            };
+            thread2.setPriority(Thread.MAX_PRIORITY);
+            thread2.start();
+        }
     }
-    @Override
-    public void interrupt(){
+
+    public void startDecoding(){
+        running=true;
+        Thread thread=new Thread(){
+            @Override
+            public void run() {
+                startFunction();
+            }
+        };
+        thread.setPriority(Thread.MAX_PRIORITY);
+        thread.start();
+    }
+    public void stopDecoding(){
         running=false;
         writeLatencyFile();
     }
 
-    public void run() {
-        setPriority(Thread.MAX_PRIORITY);
+    public void startFunction() {
         mGroundRecorder=new GroundRecorder(settings.getString("fileName","Ground"));
-        groundRecord=settings.getBoolean("groundRecording", false);
-
         if(settings.getString("dataSource","UDP").equals("FILE")){
             receiveFromFile(settings.getString("fileNameVideoSource","rpi960mal810.h264"));
         }else{receiveFromUDP();}
     }
+
     private void receiveFromUDP() {
         int server_port = this.port;
         byte[] message = new byte[1024];
         DatagramPacket p = new DatagramPacket(message, message.length);
-        DatagramSocket s = null;
         try {
             s = new DatagramSocket(server_port);
-            s.setSoTimeout(1000);
+            s.setSoTimeout(500);
         } catch (SocketException e) {e.printStackTrace();}
+        boolean exception=false;
         while (running && s != null) {
             try {
                 s.receive(p);
@@ -177,11 +172,12 @@ public class UdpReceiverDecoderThread extends Thread {
                 if(! (e instanceof SocketTimeoutException)){
                     e.printStackTrace();
                 }
+                exception=true;
             }
-            if(p.getLength()>0){
+            if(!exception){
                 parseDatagram(message, p.getLength());
                 if(groundRecord){mGroundRecorder.writeGroundRecording(message, p.getLength());}
-            } //else: the timeout happend
+            }else{exception=false;} //The timeout happened
         }
         if (s != null) {
             s.close();
@@ -301,7 +297,7 @@ public class UdpReceiverDecoderThread extends Thread {
             //may be improved (multithreading)
 
         }else{
-            configureDecoder(FormatHelper.getCsd0(),FormatHelper.getCsd1());
+            configureDecoder(MediaCodecFormatHelper.getCsd0(), MediaCodecFormatHelper.getCsd1());
         }
         long time=System.currentTimeMillis()-timeB;
         if(time>=0 && time<=200){
@@ -338,15 +334,6 @@ public class UdpReceiverDecoderThread extends Thread {
             } catch (Exception e) {
                 handleDecoderException(e,"feedDecoder");
             }
-            //System.out.println("Error Qeueing in/out Buffers");
-
-            /*
-            int count1=0;
-            try{for(int i=0;i<100;i++){ByteBuffer xyz=inputBuffers[i];count1=i;}}catch(Exception e){e.printStackTrace();}
-            System.out.println("number of inputBuffers:"+count1+"");
-            try{for(int i=0;i<100;i++){ByteBuffer xyz=outputBuffers[i];count1=i;}}catch(Exception e){e.printStackTrace();}
-            System.out.println("number of outputBuffers:"+count1+"");
-            */
         }
 
 
@@ -362,6 +349,7 @@ public class UdpReceiverDecoderThread extends Thread {
                 zaehlerFramerate++;
                 if((System.currentTimeMillis()-timeB2)>1000) {
                     int fps = (zaehlerFramerate );
+                    current_fps=(int)fps;
                     timeB2 = System.currentTimeMillis();
                     zaehlerFramerate = 0;
                     //Log.w("ReceiverDecoderThread", "fps:" + fps);
@@ -434,6 +422,9 @@ public class UdpReceiverDecoderThread extends Thread {
         if(OpenGLFpsSum<=0){OpenGLFpsSum=0;OpenGLFpsCount=0;}
         OpenGLFpsCount++;
         OpenGLFpsSum+=OGLFps;
+    }
+    public int getDecoderFps(){
+        return current_fps;
     }
     private void makeToast(final String message) {
         ((Activity) mContext).runOnUiThread(new Runnable() {

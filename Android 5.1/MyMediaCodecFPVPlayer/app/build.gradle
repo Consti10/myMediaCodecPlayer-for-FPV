@@ -28,5 +28,7 @@ dependencies {
 
     compile 'org.jcodec:jcodec-android:0.1.9'
 
+    compile project(":library")
+
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

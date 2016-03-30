@@ -1,84 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditTextPreference
-        android:key="videoFormat"
-        android:inputType="numberDecimal"
-        android:title="Video Format"
-        android:defaultValue="1.3333"
-        android:summary="only for openGL"/>
 
-    <SwitchPreference
-        android:key="osd"
-        android:title="OSD"
-        android:summary="Select OSD on/off"
-        android:defaultValue="true" />
+    <PreferenceCategory
+        android:title="Settings" >
 
-    <ListPreference
-        android:title="List Preference"
-        android:key="dataSource"
-        android:summary="Select your Data Source"
-        android:entries="@array/listentries"
-        android:entryValues="@array/listvalues" />
+        <PreferenceScreen
+            android:title="OpenGL Settings"
+            android:summary="Settings specific for OpenGL ( Player and OSD )" >
 
-    <EditTextPreference
-        android:key="fileNameVideoSource"
-        android:title="File name1"
-        android:summary="select your raw h.264 file name (located in your internal Storage) for receiving data from file"
-        android:defaultValue="rpi960mal810.h264" />
+            <EditTextPreference
+                android:key="videoFormat"
+                android:inputType="numberDecimal"
+                android:title="Video Format"
+                android:defaultValue="1.3333"
+                android:summary="F.e 720p: 1280mal720 => 1280/720=1.77777"/>
+            <EditTextPreference
+                android:key="videoDistance"
+                android:inputType="numberDecimal"
+                android:title="videoDistance"
+                android:defaultValue="5.7"
+                android:summary="Select the position of the 'video canvas' in front of your head; default:5.7f,you can select values between 2 and 10"/>
+            <EditTextPreference
+                android:key="interpupillaryDistance"
+                android:inputType="numberDecimal"
+                android:title="interpupillaryDistance"
+                android:defaultValue="0.2"
+                android:summary="Set to zero when you don't want to have an 3D Effect;for each Person different, but a default value of 0.2
+                seems to be optimal"/>
+            <EditTextPreference
+                android:key="viewportScale"
+                android:inputType="numberDecimal"
+                android:title="viewportScale"
+                android:defaultValue="1.0"
+                android:summary="Select the size of your viewport. default:1.0f, select a smaler value if you can't see the whole scene with your
+                fpv googles"/>
+            <SwitchPreference
+                android:key="swapIntervallZero"
+                android:title="swapIntervallZero"
+                android:summary="Android's GLSurfaceView default 'waits' until a second frame is created,before it swaps the frame and backBuffer.
+                 This unnecessary creates a latency of 1 frame; Setting the swapIntervall eliminates this on my Hardware,but it may cause Tearing on
+                 other Hardware; default:true"
+                android:defaultValue="true" />
+            <SwitchPreference
+                android:key="unlimitedOGLFps"
+                android:title="Unlimited Opengl FPS"
+                android:summary="Experimental ! Using EGLExt.eglPresentationTimeANDROID();default: false,because for my Hardware it seems like to have
+                 no difference"
+                android:defaultValue="false" />
+            <SwitchPreference
+                android:key="headTracking"
+                android:title="Head Tracking"
+                android:summary="Select Head Tracking on/off; TODO: calibrate ?"
+                android:defaultValue="fals" />
+            <SwitchPreference
+                android:key="osd"
+                android:title="OSD"
+                android:summary="Select OSD on/off"
+                android:defaultValue="true" />
+            <PreferenceCategory
+                android:title="OSD specific Settings" >
+                <EditTextPreference
+                    android:key="modelDistance"
+                    android:inputType="numberDecimal"
+                    android:title="modelDistance"
+                    android:defaultValue="3.0"
+                    android:summary="Select the position of the 'Kopter model' in front of your head; default:3.0f,you can select values between 2 and 10"/>
+                <SwitchPreference
+                    android:key="enable_model"
+                    android:title="enable_model"
+                    android:summary="OSD model (x,y,z achsis)"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_home_arrow"
+                    android:title="enable_home_arrow"
+                    android:summary="Home Arrow"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_fps"
+                    android:title="enable_fps"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_battery_life"
+                    android:title="enable_battery_life"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_lattitude_longitude"
+                    android:title="enable_lattitude_longitude"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_x1"
+                    android:title="enable_x1"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_x2"
+                    android:title="enable_x2"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_height"
+                    android:title="enable_height"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_voltage"
+                    android:title="enable_voltage"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_ampere"
+                    android:title="enable_ampere"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_home_distance"
+                    android:title="enable_home_distance"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_x3"
+                    android:title="enable_x3"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_speed"
+                    android:title="enable_speed"
+                    android:defaultValue="true" />
+                <SwitchPreference
+                    android:key="enable_x4"
+                    android:title="enable_x4"
+                    android:defaultValue="true" />
+            </PreferenceCategory>
 
-    <SwitchPreference
-        android:key="groundRecording"
-        android:title="Ground Recording"
-        android:summary="Select Ground recording on/off"
-        android:defaultValue="false" />
+        </PreferenceScreen>
 
-    <EditTextPreference
-        android:key="fileName"
-        android:title="File name2"
-        android:summary="select your raw h.264 file name (located in your internal Storage) for Ground Recording"
-        android:defaultValue="mGroundRecording.h264" />
+        <PreferenceScreen
+            android:title="Decoder Settings"
+            android:summary="Settings specific for your Decoder" >
+            <ListPreference
+                android:title="Data Source"
+                android:key="dataSource"
+                android:summary="Select your Data Source"
+                android:entries="@array/listentries"
+                android:entryValues="@array/listvalues" />
+            <EditTextPreference
+                android:key="fileNameVideoSource"
+                android:title="File name1"
+                android:summary="select your raw h.264 file name (located in your internal Storage) for receiving data from file"
+                android:defaultValue="rpi960mal810.h264" />
+            <SwitchPreference
+                android:key="decoderMultiThread"
+                android:title="Decoder Multi Thread"
+                android:summary="Reduces latency on most Devices, but some don't like it; default:true"
+                android:defaultValue="true" />
+            <ListPreference
+                android:title="List Preference"
+                android:key="decoder"
+                android:summary="Select your Decoder"
+                android:entries="@array/listentries2"
+                android:entryValues="@array/listvalues2" />
+
+        </PreferenceScreen>
+
+    </PreferenceCategory>
 
 
-    <EditTextPreference
-        android:key="latencyFile"
-        android:title="Latency"
-        android:summary="shows the app latency of the latest sessions"
-        android:defaultValue="These values only show the measured lag of the app; \n
+    <PreferenceCategory
+        android:title="Ground Recording Settings">
+
+        <SwitchPreference
+            android:key="groundRecording"
+            android:title="Ground Recording"
+            android:summary="Select Ground recording on/off"
+            android:defaultValue="false" />
+        <EditTextPreference
+            android:key="fileName"
+            android:title="File name2"
+            android:summary="select your raw h.264 file name (located in your internal Storage) for Ground Recording"
+            android:defaultValue="mGroundRecording.h264" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Debug Settings" >
+
+        <EditTextPreference
+            android:key="latencyFile"
+            android:title="Latency"
+            android:summary="shows the app latency of the latest sessions"
+            android:defaultValue="These values only show the measured lag of the app; \n
          The overall App latency may be much more higher,because you have to add the 'input lag' of your phone-about 32-48ms on android \n
          Every 'time' values are in ms. \n" />
+        <SwitchPreference
+            android:key="userDebug"
+            android:title="User Debug"
+            android:summary="shows toasts with debug info. default: false"
+            android:defaultValue="false" />
+        <EditTextPreference
+            android:key="debugFile"
+            android:title="Debug file"
+            android:summary="shows any exceptions if thrown and userDebug enabled"
+            android:defaultValue="" />
 
+    </PreferenceCategory>
 
-    <SwitchPreference
-        android:key="decoderMultiThread"
-        android:title="Decoder Multi Thread"
-        android:summary="Reduces latency on most Devices, but some don't like it; default:true"
-        android:defaultValue="true" />
-
-    <SwitchPreference
-        android:key="unlimitedOGLFps"
-        android:title="Unlimited Opengl FPS"
-        android:summary="Experimental ! Using EGLExt.eglPresentationTimeANDROID();default: false"
-        android:defaultValue="false" />
-
-    <ListPreference
-        android:title="List Preference"
-        android:key="decoder"
-        android:summary="Select your Decoder"
-        android:entries="@array/listentries2"
-        android:entryValues="@array/listvalues2" />
-
-    <SwitchPreference
-        android:key="userDebug"
-        android:title="User Debug"
-        android:summary="shows toasts with debug info. default: false"
-        android:defaultValue="false" />
-
-    <EditTextPreference
-        android:key="debugFile"
-        android:title="Debug file"
-        android:summary="shows any exceptions if thrown and userDebug enabled"
-        android:defaultValue="" />
 
 
 </PreferenceScreen>
