@@ -1,4 +1,10 @@
 # myMediaCodecPlayer-for-FPV
+
+
+ATTENTION: If you want to use this app for fpv, you can find the newest version with OSD support here:https://github.com/Consti10/FPV_VR
+If you are not a developer you should dwonload this app from here https://play.google.com/store/apps/details?id=com.constantin.wilson.FPV_VR&hl=en and support developement.
+
+
 This app receives a raw h.264 byte stream on udp port 5000 ,parses it into NALU units and passes the data into a MediaCodec Instance.
 It was mainly developed for HD FPV, where a low latency is essentially.
 (Infos can be found on 
